@@ -21,6 +21,14 @@
  */
 package com.ewized.wands.types;
 
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemType;
+
 public interface Wand {
 
+    /** The item type the wand is made up of */
+    ItemType wandItemType();
+
+    /** Called when the item if held and is trying to be used */
+    void onAction(Player player, Wand wand);
 }

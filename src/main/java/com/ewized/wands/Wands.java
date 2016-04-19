@@ -23,7 +23,10 @@ package com.ewized.wands;
 
 import com.ewized.wands.types.WandTypes;
 import net.year4000.utilities.sponge.AbstractSpongePlugin;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.plugin.Plugin;
 
@@ -43,5 +46,10 @@ public class Wands extends AbstractSpongePlugin {
     public void enable(GameConstructionEvent event) {
         Wands.debug("Loaded wands");
         WandTypes.values().forEach(AbstractSpongePlugin::debug);
+    }
+
+    @Listener
+    public void action(InteractBlockEvent.Secondary block, @First Player player) {
+       // todo we need this to fire
     }
 }
