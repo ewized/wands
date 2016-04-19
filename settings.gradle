@@ -1,0 +1,6 @@
+rootProject.name = 'Wands'
+
+include 'utilities:core'
+include 'utilities:core:locale'
+include 'utilities:core:redis'
+include 'utilities:sponge'
