@@ -25,5 +25,5 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public interface Wand {
     /** Called when the item if held and is trying to be used */
-    void onAction(Player player, Wand wand);
+    void onAction(Player player, WandType wand);
 }

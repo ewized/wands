@@ -37,6 +37,16 @@ public class WandType {
         this.wand = Conditions.nonNull(wand, "wand");
     }
 
+    /** Get the item name of the wand */
+    public String item() {
+        return item;
+    }
+
+    /** Get the wand of this wand type */
+    public Wand wand() {
+        return wand;
+    }
+
     @Override
     public int hashCode() {
         return Utils.hashCode(this);

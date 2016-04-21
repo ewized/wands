@@ -21,6 +21,7 @@
  */
 package com.ewized.wands;
 
+import com.ewized.wands.types.WandType;
 import com.ewized.wands.types.WandTypes;
 import com.google.common.collect.ImmutableMap;
 import net.year4000.utilities.Reflections;
@@ -36,6 +37,8 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.plugin.Plugin;
+
+import java.util.Optional;
 
 @Plugin(
     id = "com.ewized.wands",
@@ -59,16 +62,23 @@ public class Wands extends AbstractSpongePlugin {
         packets.registerListener(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.INBOUND, 0x08), onRightClick);
     }
 
+    /** Find the wand type by the raw minecraft locale name */
+    private Optional<WandType> findByRawName(String rawName) {
+        return WandTypes.values().stream().filter(wand -> rawName.contains(wand.item())).findFirst();
+    }
+
     // Packet workaround
     private PacketListener onRightClick = (player, packet) -> {
         // Item
         ProxyEntity entity = ProxyEntity.of(player);
         String rawItemName = Reflections.field(packet.mcPacket(), "field_149580_e").get().toString();
+        Optional<WandType> wand = findByRawName(rawItemName);
 
-        if (rawItemName.contains("WAND_TYPE")) { // check if item is a wand
+        if (wand.isPresent()) { // check if item is a wand
             Packet newPacket = new Packet(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B));
             newPacket.inject(ImmutableMap.of("field_148981_a", entity.entityId(), "field_148980_b", 0));
             packets.sendPacket(player, newPacket);
+            wand.get().wand().onAction(player, wand.get());
         }
         return false; // leave alone
     };

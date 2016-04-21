@@ -22,12 +22,13 @@
 package com.ewized.wands.types.elements;
 
 import com.ewized.wands.types.Wand;
+import com.ewized.wands.types.WandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 public class FireWand implements Wand {
     @Override
-    public void onAction(Player player, Wand wand) {
+    public void onAction(Player player, WandType wand) {
         player.sendMessage(Text.of("FireWand"));
     }
 }
