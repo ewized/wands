@@ -23,16 +23,11 @@ package com.ewized.wands.types.elements;
 
 import com.ewized.wands.types.Wand;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.text.Text;
 
 public class IceWand implements Wand {
-
-    @Override public ItemType wandItemType() {
-        return ItemTypes.IRON_HOE;
-    }
-
-    @Override public void onAction(Player player, Wand wand) {
-
+    @Override
+    public void onAction(Player player, Wand wand) {
+        player.sendMessage(Text.of("Ice Wand"));
     }
 }

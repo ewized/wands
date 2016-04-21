@@ -27,11 +27,13 @@ import net.year4000.utilities.Utils;
 /** The type of wand that stores the id and the wand instance */
 public class WandType {
     private final String id;
+    private final String item;
     private final Wand wand;
 
     /** Create the wand type with the wand */
-    public WandType(String id, Wand wand) {
+    public WandType(String id, String item, Wand wand) {
         this.id = Conditions.nonNullOrEmpty(id, "id");
+        this.item = Conditions.nonNullOrEmpty(item, "item");
         this.wand = Conditions.nonNull(wand, "wand");
     }
 

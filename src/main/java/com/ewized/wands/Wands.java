@@ -22,7 +22,14 @@
 package com.ewized.wands;
 
 import com.ewized.wands.types.WandTypes;
+import com.google.common.collect.ImmutableMap;
+import net.year4000.utilities.Reflections;
 import net.year4000.utilities.sponge.AbstractSpongePlugin;
+import net.year4000.utilities.sponge.protocol.Packet;
+import net.year4000.utilities.sponge.protocol.PacketListener;
+import net.year4000.utilities.sponge.protocol.PacketTypes;
+import net.year4000.utilities.sponge.protocol.Packets;
+import net.year4000.utilities.sponge.protocol.proxy.ProxyEntity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
@@ -37,6 +44,8 @@ import org.spongepowered.api.plugin.Plugin;
     authors = {"ewized"}
 )
 public class Wands extends AbstractSpongePlugin {
+    private Packets packets;
+
     /** Get the current instance of wands */
     public static Wands get() {
         return Wands.instance();
@@ -44,12 +53,28 @@ public class Wands extends AbstractSpongePlugin {
 
     @Listener
     public void enable(GameConstructionEvent event) {
+        packets = Packets.manager(this);
         Wands.debug("Loaded wands");
         WandTypes.values().forEach(AbstractSpongePlugin::debug);
+        packets.registerListener(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.INBOUND, 0x08), onRightClick);
     }
+
+    // Packet workaround
+    private PacketListener onRightClick = (player, packet) -> {
+        // Item
+        ProxyEntity entity = ProxyEntity.of(player);
+        String rawItemName = Reflections.field(packet.mcPacket(), "field_149580_e").get().toString();
+
+        if (rawItemName.contains("WAND_TYPE")) { // check if item is a wand
+            Packet newPacket = new Packet(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B));
+            newPacket.inject(ImmutableMap.of("field_148981_a", entity.entityId(), "field_148980_b", 0));
+            packets.sendPacket(player, newPacket);
+        }
+        return false; // leave alone
+    };
 
     @Listener
     public void action(InteractBlockEvent.Secondary block, @First Player player) {
-       // todo we need this to fire
+       // todo we need this to fire see onRightClick
     }
 }

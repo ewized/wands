@@ -21,6 +21,11 @@
  */
 package com.ewized.wands.types;
 
+import static org.spongepowered.api.item.ItemTypes.DIAMOND_HOE;
+import static org.spongepowered.api.item.ItemTypes.GOLDEN_HOE;
+import static org.spongepowered.api.item.ItemTypes.IRON_HOE;
+import static org.spongepowered.api.item.ItemTypes.WOODEN_HOE;
+
 import com.ewized.wands.Wands;
 import com.ewized.wands.types.elements.FireWand;
 import com.ewized.wands.types.elements.IceWand;
@@ -31,6 +36,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import net.year4000.utilities.Conditions;
 import net.year4000.utilities.utils.UtilityConstructError;
+import org.spongepowered.api.item.ItemType;
 
 import java.util.Collection;
 import java.util.Map;
@@ -45,11 +51,12 @@ public class WandTypes {
     }
 
     /** Register a wand into the system */
-    public static WandType register(String name, Supplier<Wand> supplier) {
+    public static WandType register(String name, ItemType itemType, Supplier<Wand> supplier) {
         Conditions.nonNullOrEmpty(name, "name");
         Conditions.nonNull(supplier, "supplier");
         Wand wand = Conditions.nonNull(supplier.get(), "supplier.get()");
-        WandType type = new WandType(name, wand);
+        String item = itemType.getTranslation().getId().substring(itemType.getTranslation().getId().lastIndexOf("."));
+        WandType type = new WandType(name, item, wand);
         Conditions.condition(types.get(name) == null, "Must not all ready exist");
         Wands.debug("Wand %s has been added.", name);
         types.put(name, type);
@@ -66,9 +73,8 @@ public class WandTypes {
         return ImmutableSet.copyOf(types.keySet());
     }
 
-    public static final WandType ICE_WAND = register("ice", IceWand::new);
-    public static final WandType FIRE_WAND = register("fire", FireWand::new);
-    public static final WandType WIND_WAND = register("wind", WindWand::new);
-    public static final WandType WATER_WAND = register("water", WaterWand::new);
-
+    public static final WandType ICE_WAND = register("ice", IRON_HOE, IceWand::new);
+    public static final WandType FIRE_WAND = register("fire", GOLDEN_HOE, FireWand::new);
+    public static final WandType WIND_WAND = register("wind", WOODEN_HOE, WindWand::new);
+    public static final WandType WATER_WAND = register("water", DIAMOND_HOE, WaterWand::new);
 }
