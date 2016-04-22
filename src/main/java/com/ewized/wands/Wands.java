@@ -31,12 +31,15 @@ import net.year4000.utilities.sponge.protocol.PacketListener;
 import net.year4000.utilities.sponge.protocol.PacketTypes;
 import net.year4000.utilities.sponge.protocol.Packets;
 import net.year4000.utilities.sponge.protocol.proxy.ProxyEntity;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.scheduler.Task;
 
 import java.util.Optional;
 
@@ -60,6 +63,11 @@ public class Wands extends AbstractSpongePlugin {
         Wands.debug("Loaded wands");
         WandTypes.values().forEach(AbstractSpongePlugin::debug);
         packets.registerListener(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.INBOUND, 0x08), onRightClick);
+    }
+
+    @Listener
+    public void deisable(GameStoppingEvent event) {
+        Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
     }
 
     /** Find the wand type by the raw minecraft locale name */
