@@ -27,6 +27,7 @@ import com.ewized.wands.types.WandType;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.effect.particle.ParticleType;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -45,7 +46,7 @@ public class IceWand implements Wand {
         player.sendMessage(ChatTypes.ACTION_BAR, Text.of(TextColors.WHITE, "Ice Wand"));
         Vector3d vector = player.getLocation().getPosition().add(0, -1.65, 0);
 
-        final AtomicInteger deg = new AtomicInteger(240);
+        final AtomicInteger deg = new AtomicInteger(360);
         final AtomicReference<UUID> id = new AtomicReference<>();
         UUID uuid = Sponge.getScheduler().createAsyncExecutor(Wands.get()).scheduleAtFixedRate(() -> {
             int number = deg.getAndDecrement();
@@ -54,7 +55,7 @@ public class IceWand implements Wand {
             } else if (id.get() != null) {
                 Sponge.getScheduler().getTaskById(id.get());
             }
-        }, 0, 1, TimeUnit.MILLISECONDS).getTask().getUniqueId();
+        }, 0, 3, TimeUnit.MILLISECONDS).getTask().getUniqueId();
         id.set(uuid);
     }
 
@@ -65,8 +66,8 @@ public class IceWand implements Wand {
         double rr = 0.001;
         for (int i = 0; i < 360 * 2; i++) {
             double θ = i * Math.PI / 180;
-            double y = r * Math.cos(θ) * Math.cos(Θ);
-            double z = r * Math.sin(θ) * Math.cos(Θ);
+            double y = r * Math.cos(8 * θ) * 0.125;
+            double z = r * Math.sin(6 * θ) * 0.125;
             double yy = -rr * Math.cos(θ);
             double zz = -rr * Math.sin(θ);
             rr += 0.0125;
@@ -78,11 +79,14 @@ public class IceWand implements Wand {
             double xxxx = zz * Math.cos(Θ) - yy * Math.sin(Θ);
             double zzzz = zz * Math.sin(Θ) + yy * Math.cos(Θ);
 
+            ParticleType e = i % 3 == 0 ? ParticleTypes.SMOKE_NORMAL : ParticleTypes.REDSTONE;
             ParticleEffect effect = ParticleEffect.builder().type(ParticleTypes.SNOW_SHOVEL).build();
-            ParticleEffect effect2 = ParticleEffect.builder().type(ParticleTypes.SMOKE_NORMAL).build();
+            ParticleEffect effect2 = ParticleEffect.builder().type(e).build();
 
-            world.spawnParticles(effect, origin.clone().add(xxxx, o += 0.00125, zzzz));
-            world.spawnParticles(effect2, origin.clone().add(xxx, o += 0.0576, zzz));
+            if (i % 2 == 0) {
+                world.spawnParticles(effect, origin.clone().add(xxxx, o += 0.00125, zzzz));
+                world.spawnParticles(effect2, origin.clone().add(xxx, o += 0.0576, zzz));
+            }
         }
     }
 }

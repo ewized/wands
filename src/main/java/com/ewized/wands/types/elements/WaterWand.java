@@ -45,7 +45,7 @@ public class WaterWand implements Wand {
         player.sendMessage(ChatTypes.ACTION_BAR, Text.of(TextColors.BLUE, "Water Wand"));
         Vector3d vector = player.getLocation().getPosition().add(0, 1.65, 0);
         Vector3d pos = player.getHeadRotation();//.normalize();
-        double t = pos.getY() * Math.PI/180;
+        double t = pos.getY() * Math.PI / 180;
 
         final AtomicInteger deg = new AtomicInteger(5);
         final AtomicReference<UUID> id = new AtomicReference<>();
@@ -63,7 +63,7 @@ public class WaterWand implements Wand {
     private void particles(World world, Vector3d origin, double t, double shift) {
         double o = 0.1;
         double r = 0.1;
-        for (int i = 0; i < 360 * 8; i++) {
+        for (int i = 0; i < 360 * 6; i++) {
             double theta = i * Math.PI / 180;
             double x = (o += 0.00125);
             double y = r * Math.cos(shift * theta);
@@ -76,8 +76,9 @@ public class WaterWand implements Wand {
                     .type(ParticleTypes.DRIP_WATER)
                     .build();
 
-
-            world.spawnParticles(effect, origin.clone().add(xx, y, zz));
+            if (i % 2 == 0) {
+                world.spawnParticles(effect, origin.clone().add(xx, y, zz));
+            }
         }
 
     }

@@ -35,7 +35,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
 import java.util.Optional;
@@ -55,7 +55,7 @@ public class Wands extends AbstractSpongePlugin {
     }
 
     @Listener
-    public void enable(GameConstructionEvent event) {
+    public void enable(GameInitializationEvent event) {
         packets = Packets.manager(this);
         Wands.debug("Loaded wands");
         WandTypes.values().forEach(AbstractSpongePlugin::debug);
@@ -80,7 +80,7 @@ public class Wands extends AbstractSpongePlugin {
             packets.sendPacket(player, newPacket);
             wand.get().wand().onAction(player, wand.get());
         }
-        return false; // leave alone
+        return true; // dont leave alone
     };
 
     @Listener
