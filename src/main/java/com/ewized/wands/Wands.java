@@ -87,8 +87,9 @@ public class Wands extends AbstractSpongePlugin {
             newPacket.inject(ImmutableMap.of("field_148981_a", entity.entityId(), "field_148980_b", 0));
             packets.sendPacket(player, newPacket);
             wand.get().wand().onAction(player, wand.get());
+            return true; // do not leave alone
         }
-        return true; // dont leave alone
+        return false; // leave alone
     };
 
     @Listener
