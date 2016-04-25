@@ -37,6 +37,7 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
 
@@ -46,7 +47,8 @@ import java.util.Optional;
     id = "com.ewized.wands",
     name = "Wands",
     description = "Various wands that are fun to mess around with",
-    authors = {"ewized"}
+    authors = {"ewized"},
+    dependencies = {@Dependency(id = "net.year4000.utilities")}
 )
 public class Wands extends AbstractSpongePlugin {
     private Packets packets;
