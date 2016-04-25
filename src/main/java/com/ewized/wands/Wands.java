@@ -23,11 +23,10 @@ package com.ewized.wands;
 
 import com.ewized.wands.types.WandType;
 import com.ewized.wands.types.WandTypes;
-import com.google.common.collect.ImmutableMap;
-import net.year4000.utilities.Reflections;
 import net.year4000.utilities.sponge.AbstractSpongePlugin;
 import net.year4000.utilities.sponge.protocol.Packet;
 import net.year4000.utilities.sponge.protocol.PacketListener;
+import net.year4000.utilities.sponge.protocol.PacketType;
 import net.year4000.utilities.sponge.protocol.PacketTypes;
 import net.year4000.utilities.sponge.protocol.Packets;
 import net.year4000.utilities.sponge.protocol.proxy.ProxyEntity;
@@ -66,7 +65,7 @@ public class Wands extends AbstractSpongePlugin {
     }
 
     @Listener
-    public void deisable(GameStoppingEvent event) {
+    public void disable(GameStoppingEvent event) {
         Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
     }
 
@@ -79,13 +78,15 @@ public class Wands extends AbstractSpongePlugin {
     private PacketListener onRightClick = (player, packet) -> {
         // Item
         ProxyEntity entity = ProxyEntity.of(player);
-        String rawItemName = Reflections.field(packet.mcPacket(), "field_149580_e").get().toString();
-        Optional<WandType> wand = findByRawName(rawItemName);
+        //String rawItemName = Reflections.getter(packet.mcPacket(), "field_149580_e").get().toString();
+        Optional<WandType> wand = findByRawName(packet.accessor().get(3).toString());
 
         if (wand.isPresent()) { // check if item is a wand
-            Packet newPacket = new Packet(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B));
-            newPacket.inject(ImmutableMap.of("field_148981_a", entity.entityId(), "field_148980_b", 0));
-            packets.sendPacket(player, newPacket);
+            final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp untill 1.9
+            packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
+                .add(entity.entityId()) // Entity Id
+                .add(0) // Swing Arm
+                .inject());
             wand.get().wand().onAction(player, wand.get());
             return true; // do not leave alone
         }
