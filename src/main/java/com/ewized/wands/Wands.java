@@ -31,6 +31,7 @@ import net.year4000.utilities.sponge.protocol.Packets;
 import net.year4000.utilities.sponge.protocol.proxy.ProxyEntityPlayerMP;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -85,41 +86,50 @@ public class Wands extends AbstractSpongePlugin {
     @Listener
     public void wand(InteractBlockEvent.Secondary event, @First Player player) {
         final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp until 1.9
-        findByRawName(player.getItemInHand().get().getTranslation().getId()).ifPresent(wand -> {
-            if (wand.hasPermission(player)) {
-                packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
-                    .add(ProxyEntityPlayerMP.of(player).entityId()) // Entity Id
-                    .add(0) // Swing Arm
-                    .inject());
-                wand.wand().onAction(player, wand);
-                event.setCancelled(true);
-            } else {
-                debug(player.getName() + " does not have permission to use " + wand);
-            }
+        player.getItemInHand().ifPresent(itemStack -> {
+            findByRawName(itemStack.getTranslation().getId()).ifPresent(wand -> {
+                if (wand.hasPermission(player) && itemStack.get(Keys.DISPLAY_NAME).isPresent()) {
+                    packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
+                            .add(ProxyEntityPlayerMP.of(player).entityId()) // Entity Id
+                            .add(0) // Swing Arm
+                            .inject());
+                    wand.wand().onAction(player, wand);
+                    event.setCancelled(true);
+                } else {
+                    debug(player.getName() + " does not have permission to use " + wand);
+                }
+            });
         });
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Listener
     public void alter(InteractBlockEvent.Secondary event, @First Player player) {
-        ItemStack stack = player.getItemInHand().get();
-        if (stack.toString().contains("item.potion@16384")) { // is mundane potion
-            BlockRay<World> ray = BlockRay.from(player).blockLimit(10).build();
-            while (ray.hasNext()) {
-                BlockRayHit<World> hit = ray.next();
-                if (hit.getLocation().getBlock().getType().equals(BlockTypes.REDSTONE_BLOCK)) {
-                    Optional<Entity> item = player.getWorld()
+        player.getItemInHand().ifPresent(itemStack -> {
+            if (itemStack.toString().contains("item.potion@16384")) { // is mundane potion
+                BlockRay<World> ray = BlockRay.from(player).blockLimit(10).build();
+                while (ray.hasNext()) {
+                    BlockRayHit<World> hit = ray.next();
+                    if (hit.getLocation().getBlock().getType().equals(BlockTypes.REDSTONE_BLOCK)) {
+                        player.getWorld()
                             .getEntities(entity -> entity.getType().equals(EntityTypes.ITEM))
                             .stream()
                             .filter(e -> e.getLocation().getBlockPosition().sub(0, 1, 0).equals(hit.getBlockPosition()))
-                            .findFirst();
-                    if (item.isPresent()) {
-                        log(item.get());
+                            .findAny().ifPresent(item -> {
+                            findByRawName(item.toString()).ifPresent(wandType -> {
+                                log(wandType);
+                                item.remove();
+                                ItemStack stack = ItemStack.of(wandType.itemType(), 1);
+                                stack.offer(Keys.DISPLAY_NAME, wandType.wand().name(player));
+                                stack.offer(Keys.HIDE_ENCHANTMENTS, true);
+                                player.getInventory().offer(stack);
+                            });
+                        });
+                        return;
                     }
-                    return;
                 }
             }
-        }
+        });
     }
 
     public static void log(Object object, Object... args) {

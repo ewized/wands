@@ -56,7 +56,7 @@ public class WandTypes {
         Conditions.nonNull(supplier, "supplier");
         Wand wand = Conditions.nonNull(supplier.get(), "supplier.get()");
         String item = itemType.getTranslation().getId().substring(0, itemType.getTranslation().getId().lastIndexOf("."));
-        WandType type = new WandType(name, item, wand);
+        WandType type = new WandType(name, item,itemType, wand);
         Conditions.condition(types.get(name) == null, "Must not all ready exist");
         Wands.debug("Wand %s has been added.", name);
         types.put(name, type);

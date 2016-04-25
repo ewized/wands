@@ -23,18 +23,21 @@ package com.ewized.wands.types;
 
 import net.year4000.utilities.Conditions;
 import net.year4000.utilities.Utils;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.service.permission.Subject;
 
 /** The type of wand that stores the id and the wand instance */
 public class WandType {
     private final String id;
     private final String item;
+    private final ItemType itemType;
     private final Wand wand;
 
     /** Create the wand type with the wand */
-    public WandType(String id, String item, Wand wand) {
+    public WandType(String id, String item, ItemType itemType, Wand wand) {
         this.id = Conditions.nonNullOrEmpty(id, "id");
         this.item = Conditions.nonNullOrEmpty(item, "item");
+        this.itemType = Conditions.nonNull(itemType,"itemType");
         this.wand = Conditions.nonNull(wand, "wand");
     }
 
@@ -46,6 +49,11 @@ public class WandType {
     /** Get the item name of the wand */
     public String item() {
         return item;
+    }
+
+    /** Get the item type */
+    public ItemType itemType() {
+        return itemType;
     }
 
     /** Get the wand of this wand type */

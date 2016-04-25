@@ -4,6 +4,7 @@ import com.ewized.wands.types.elements.IceWand;
 import org.junit.Assert;
 import org.junit.Test;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
@@ -70,6 +71,6 @@ public class WandTypeTest {
     @Test
     public void permissionTest() {
         User user = new User();
-        Assert.assertTrue(new WandType("ice", "name", new IceWand()).hasPermission(user));
+        Assert.assertTrue(new WandType("ice", "name", ItemTypes.NONE, new IceWand()).hasPermission(user));
     }
 }
