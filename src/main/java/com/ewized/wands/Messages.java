@@ -31,7 +31,7 @@ public enum Messages implements LocaleKeys<CommandSource, Text> {
         static QuickCache<Messages.Factory> inst = QuickCache.builder(Messages.Factory.class).build();
 
         public Factory() {
-            super("https://raw.githubusercontent.com/ewized/wands/master/src/resources/locales/");
+            super("https://raw.githubusercontent.com/ewized/wands/master/src/main/resources/locales/");
         }
     }
 }
