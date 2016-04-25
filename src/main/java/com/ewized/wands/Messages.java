@@ -1,9 +1,9 @@
 package com.ewized.wands;
 
 import net.year4000.utilities.cache.QuickCache;
-import net.year4000.utilities.locale.ClassLocaleManager;
 import net.year4000.utilities.locale.LocaleKeys;
 import net.year4000.utilities.locale.Translatable;
+import net.year4000.utilities.locale.URLLocaleManager;
 import net.year4000.utilities.sponge.SpongeLocale;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
@@ -27,7 +27,7 @@ public enum Messages implements LocaleKeys<CommandSource, Text> {
         return new SpongeLocale(Factory.inst.get());
     }
 
-    public static class Factory extends ClassLocaleManager {
+    public static class Factory extends URLLocaleManager {
         static QuickCache<Messages.Factory> inst = QuickCache.builder(Messages.Factory.class).build();
 
         public Factory() {
