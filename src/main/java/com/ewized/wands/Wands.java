@@ -25,11 +25,10 @@ import com.ewized.wands.types.WandType;
 import com.ewized.wands.types.WandTypes;
 import net.year4000.utilities.sponge.AbstractSpongePlugin;
 import net.year4000.utilities.sponge.protocol.Packet;
-import net.year4000.utilities.sponge.protocol.PacketListener;
 import net.year4000.utilities.sponge.protocol.PacketType;
 import net.year4000.utilities.sponge.protocol.PacketTypes;
 import net.year4000.utilities.sponge.protocol.Packets;
-import net.year4000.utilities.sponge.protocol.proxy.ProxyEntity;
+import net.year4000.utilities.sponge.protocol.proxy.ProxyEntityPlayerMP;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -55,15 +54,14 @@ public class Wands extends AbstractSpongePlugin {
 
     /** Get the current instance of wands */
     public static Wands get() {
-        return Wands.instance();
+        return Wands.instance(Wands.class);
     }
 
     @Listener
     public void enable(GameInitializationEvent event) {
         packets = Packets.manager(this);
         Wands.debug("Loaded wands");
-        WandTypes.values().forEach(AbstractSpongePlugin::debug);
-        packets.registerListener(PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.INBOUND, 0x08), onRightClick);
+        WandTypes.values().forEach(Wands::debug);
     }
 
     @Listener
@@ -76,26 +74,26 @@ public class Wands extends AbstractSpongePlugin {
         return WandTypes.values().stream().filter(wand -> rawName.contains(wand.item())).findFirst();
     }
 
-    // Packet workaround
-    private PacketListener onRightClick = (player, packet) -> {
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Listener
+    public void action(InteractBlockEvent.Secondary event, @First Player player) {
         // Item
-        ProxyEntity entity = ProxyEntity.of(player);
-        Optional<WandType> wand = findByRawName(packet.accessor().get(3).toString());
-
-        if (wand.isPresent()) { // check if item is a wand
-            final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp untill 1.9
+        final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp until 1.9
+        findByRawName(player.getItemInHand().get().getTranslation().getId()).ifPresent(wand -> {
             packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
-                .add(entity.entityId()) // Entity Id
+                .add(ProxyEntityPlayerMP.of(player).entityId()) // Entity Id
                 .add(0) // Swing Arm
                 .inject());
-            wand.get().wand().onAction(player, wand.get());
-            return true; // do not leave alone
-        }
-        return false; // leave alone
-    };
+            wand.wand().onAction(player, wand);
+            event.setCancelled(true);
+        });
+    }
 
-    @Listener
-    public void action(InteractBlockEvent.Secondary block, @First Player player) {
-       // todo we need this to fire see onRightClick
+    public static void log(Object object, Object... args) {
+        log(get(), object, args);
+    }
+
+    public static void debug(Object object, Object... args) {
+        debug(get(), object, args);
     }
 }
