@@ -30,15 +30,22 @@ import net.year4000.utilities.sponge.protocol.PacketTypes;
 import net.year4000.utilities.sponge.protocol.Packets;
 import net.year4000.utilities.sponge.protocol.proxy.ProxyEntityPlayerMP;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.blockray.BlockRay;
+import org.spongepowered.api.util.blockray.BlockRayHit;
+import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
@@ -76,7 +83,7 @@ public class Wands extends AbstractSpongePlugin {
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Listener
-    public void action(InteractBlockEvent.Secondary event, @First Player player) {
+    public void wand(InteractBlockEvent.Secondary event, @First Player player) {
         final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp until 1.9
         findByRawName(player.getItemInHand().get().getTranslation().getId()).ifPresent(wand -> {
             if (wand.hasPermission(player)) {
@@ -90,6 +97,29 @@ public class Wands extends AbstractSpongePlugin {
                 debug(player.getName() + " does not have permission to use " + wand);
             }
         });
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Listener
+    public void alter(InteractBlockEvent.Secondary event, @First Player player) {
+        ItemStack stack = player.getItemInHand().get();
+        if (stack.toString().contains("item.potion@16384")) { // is mundane potion
+            BlockRay<World> ray = BlockRay.from(player).blockLimit(10).build();
+            while (ray.hasNext()) {
+                BlockRayHit<World> hit = ray.next();
+                if (hit.getLocation().getBlock().getType().equals(BlockTypes.REDSTONE_BLOCK)) {
+                    Optional<Entity> item = player.getWorld()
+                            .getEntities(entity -> entity.getType().equals(EntityTypes.ITEM))
+                            .stream()
+                            .filter(e -> e.getLocation().getBlockPosition().sub(0, 1, 0).equals(hit.getBlockPosition()))
+                            .findFirst();
+                    if (item.isPresent()) {
+                        log(item.get());
+                    }
+                    return;
+                }
+            }
+        }
     }
 
     public static void log(Object object, Object... args) {
