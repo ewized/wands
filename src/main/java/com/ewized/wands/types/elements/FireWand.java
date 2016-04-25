@@ -21,18 +21,19 @@
  */
 package com.ewized.wands.types.elements;
 
-import static org.spongepowered.api.text.format.TextColors.RED;
-
+import com.ewized.wands.Messages;
 import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import java.util.UUID;
@@ -42,8 +43,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class FireWand implements Wand {
     @Override
+    public Text name(CommandSource src) {
+        return Text.of(TextColors.RED, Messages.WAND_FIRE_NAME.get(src));
+    }
+
+    @Override
     public void onAction(Player player, WandType wand) {
-        player.sendMessage(ChatTypes.ACTION_BAR, Text.of(RED, "Fire Wand"));
+        player.sendMessage(ChatTypes.ACTION_BAR, name(player));
         Vector3d vector = player.getLocation().getPosition();
         double Θ = player.getHeadRotation().getY() * Math.PI / 180;
 

@@ -21,23 +21,31 @@
  */
 package com.ewized.wands.types.elements;
 
+import com.ewized.wands.Messages;
 import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 public class WindWand implements Wand {
     @Override
+    public Text name(CommandSource src) {
+        return Text.of(TextColors.WHITE, Messages.WAND_WIND_NAME.get(src));
+    }
+
+    @Override
     public void onAction(Player player, WandType wand) {
-        player.sendMessage(ChatTypes.ACTION_BAR, Text.of("Wind Wand"));
+        player.sendMessage(ChatTypes.ACTION_BAR, name(player));
         World world = player.getLocation().getExtent();
 
         // Packets are async from mc thread this puts it back on the main thread

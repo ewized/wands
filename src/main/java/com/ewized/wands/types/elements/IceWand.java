@@ -21,11 +21,13 @@
  */
 package com.ewized.wands.types.elements;
 
+import com.ewized.wands.Messages;
 import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleType;
 import org.spongepowered.api.effect.particle.ParticleTypes;
@@ -41,9 +43,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class IceWand implements Wand {
+
+    @Override
+    public Text name(CommandSource src) {
+        return Text.of(TextColors.AQUA, Messages.WAND_ICE_NAME.get(src));
+    }
+
     @Override
     public void onAction(Player player, WandType wand) {
-        player.sendMessage(ChatTypes.ACTION_BAR, Text.of(TextColors.WHITE, "Ice Wand"));
+        player.sendMessage(ChatTypes.ACTION_BAR, name(player));
         Vector3d vector = player.getLocation().getPosition().add(0, -1.65, 0);
 
         final AtomicInteger deg = new AtomicInteger(360);
