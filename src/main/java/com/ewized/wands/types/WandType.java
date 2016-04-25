@@ -23,6 +23,7 @@ package com.ewized.wands.types;
 
 import net.year4000.utilities.Conditions;
 import net.year4000.utilities.Utils;
+import org.spongepowered.api.service.permission.Subject;
 
 /** The type of wand that stores the id and the wand instance */
 public class WandType {
@@ -37,6 +38,11 @@ public class WandType {
         this.wand = Conditions.nonNull(wand, "wand");
     }
 
+    /** Get the id of the wand */
+    public String id() {
+        return id;
+    }
+
     /** Get the item name of the wand */
     public String item() {
         return item;
@@ -45,6 +51,11 @@ public class WandType {
     /** Get the wand of this wand type */
     public Wand wand() {
         return wand;
+    }
+
+    /** Does the user have the permission to use the wand */
+    public boolean hasPermission(Subject subject) {
+        return subject.hasPermission("wands." + id());
     }
 
     @Override

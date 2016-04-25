@@ -77,15 +77,18 @@ public class Wands extends AbstractSpongePlugin {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Listener
     public void action(InteractBlockEvent.Secondary event, @First Player player) {
-        // Item
         final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp until 1.9
         findByRawName(player.getItemInHand().get().getTranslation().getId()).ifPresent(wand -> {
-            packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
-                .add(ProxyEntityPlayerMP.of(player).entityId()) // Entity Id
-                .add(0) // Swing Arm
-                .inject());
-            wand.wand().onAction(player, wand);
-            event.setCancelled(true);
+            if (wand.hasPermission(player)) {
+                packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
+                    .add(ProxyEntityPlayerMP.of(player).entityId()) // Entity Id
+                    .add(0) // Swing Arm
+                    .inject());
+                wand.wand().onAction(player, wand);
+                event.setCancelled(true);
+            } else {
+                debug(player.getName() + " does not have permission to use " + wand);
+            }
         });
     }
 
