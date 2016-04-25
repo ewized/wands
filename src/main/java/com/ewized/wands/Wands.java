@@ -78,7 +78,6 @@ public class Wands extends AbstractSpongePlugin {
     private PacketListener onRightClick = (player, packet) -> {
         // Item
         ProxyEntity entity = ProxyEntity.of(player);
-        //String rawItemName = Reflections.getter(packet.mcPacket(), "field_149580_e").get().toString();
         Optional<WandType> wand = findByRawName(packet.accessor().get(3).toString());
 
         if (wand.isPresent()) { // check if item is a wand
