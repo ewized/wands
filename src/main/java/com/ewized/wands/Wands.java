@@ -32,6 +32,9 @@ import net.year4000.utilities.sponge.protocol.proxy.ProxyEntityPlayerMP;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.effect.particle.ParticleTypes;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -123,6 +126,8 @@ public class Wands extends AbstractSpongePlugin {
                                 stack.offer(Keys.DISPLAY_NAME, wandType.wand().name(player));
                                 stack.offer(Keys.HIDE_ENCHANTMENTS, true);
                                 player.getInventory().offer(stack);
+                                player.playSound(SoundTypes.EXPLODE, item.getLocation().getPosition(), 1);
+                                item.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.EXPLOSION_LARGE).build(), item.getLocation().getPosition());
                             });
                         });
                         return;
