@@ -88,7 +88,11 @@ public class Wands extends AbstractSpongePlugin {
         final PacketType PLAY_CLIENT_ANIMATION = PacketTypes.of(PacketTypes.State.PLAY, PacketTypes.Binding.OUTBOUND, 0x0B); // temp until 1.9
         player.getItemInHand().ifPresent(itemStack -> {
             findByRawName(itemStack.getTranslation().getId()).ifPresent(wand -> {
-                if (wand.hasPermission(player) && itemStack.get(Keys.DISPLAY_NAME).isPresent()) {
+                if (!itemStack.get(Keys.DISPLAY_NAME).isPresent()) { // Not a wand
+                    return;
+                }
+
+                if (wand.hasPermission(player)) { // Make sure player has perms to use the wand
                     packets.sendPacket(player, new Packet(PLAY_CLIENT_ANIMATION).injector()
                             .add(ProxyEntityPlayerMP.of(player).entityId()) // Entity Id
                             .add(0) // Swing Arm
