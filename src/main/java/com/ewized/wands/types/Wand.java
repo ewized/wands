@@ -21,11 +21,20 @@
  */
 package com.ewized.wands.types;
 
+import com.ewized.wands.Wands;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.text.Text;
 
 public interface Wand {
+    /** The reference to the plugin */
+    Wands plugin = Wands.get();
+
+    /** The executor for the wands */
+    SpongeExecutorService executor = Sponge.getScheduler().createAsyncExecutor(plugin);
+
     /** Called when the item if held and is trying to be used */
     void onAction(Player player, WandType wand);
 

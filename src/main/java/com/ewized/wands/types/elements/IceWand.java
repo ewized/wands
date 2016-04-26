@@ -45,8 +45,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class IceWand implements Wand {
-    private static final Wands plugin = Wands.get();
-    private static final SpongeExecutorService executor = Sponge.getScheduler().createAsyncExecutor(plugin);
 
     @Override
     public Text name(CommandSource src) {
@@ -82,7 +80,7 @@ public class IceWand implements Wand {
             double o = 0.1;
             double r = 0.01;
             double rr = 0.001;
-            for (int i = 0; i < 360 * 1.25; i++) {
+            for (int i = 0; i < 360 * 1.35; i++) {
                 double θ = i * Math.PI / 180;
                 double y = r * Math.cos(8 * θ) * 0.125;
                 double z = r * Math.sin(6 * θ) * 0.125;
