@@ -31,7 +31,6 @@ import net.year4000.utilities.sponge.protocol.PacketTypes;
 import net.year4000.utilities.sponge.protocol.Packets;
 import net.year4000.utilities.sponge.protocol.proxy.ProxyEntityPlayerMP;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -111,15 +110,19 @@ public class Wands extends AbstractSpongePlugin {
                 BlockRay<World> ray = BlockRay.from(player).blockLimit(10).build();
                 while (ray.hasNext()) {
                     BlockRayHit<World> hit = ray.next();
-                    if (hit.getLocation().getBlock().getType().equals(BlockTypes.REDSTONE_BLOCK)) {
+                    Infusion infusion = new Infusion(hit.getLocation().getBlockPosition(), hit.getLocation().getExtent());
+                    // Make sure there is an alter there
+                    if (infusion.isAlter()) {
                         player.getWorld()
                             .getEntities(entity -> entity.getType().equals(EntityTypes.ITEM))
                             .stream()
-                            .filter(e -> e.getLocation().getBlockPosition().sub(0, 1, 0).equals(hit.getBlockPosition()))
+                            .filter(e -> {
+                                boolean alpha = e.getLocation().getBlockPosition().sub(0, 1, 0).equals(hit.getBlockPosition());
+                                boolean beta = !e.get(Keys.REPRESENTED_ITEM).get().get(Keys.DISPLAY_NAME).isPresent();
+                                return alpha && beta;
+                            })
                             .findAny().ifPresent(item -> {
                             findByRawName(item.toString()).ifPresent(wandType -> {
-                                Infusion infusion = new Infusion(item.getLocation().getBlockPosition(), item.getWorld());
-
                                 if (infusion.isRunningAtLocation()) {
                                     player.sendMessage(Text.of(TextColors.GOLD, Messages.ALTER_RUNNING.get(player)));
                                 } else {

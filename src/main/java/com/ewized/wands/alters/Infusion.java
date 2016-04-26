@@ -27,8 +27,10 @@ import com.ewized.wands.types.WandType;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.year4000.utilities.Conditions;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
@@ -38,16 +40,18 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Infusion implements Runnable {
     private static final List<Vector3i> pending = Lists.newArrayList();
     private static final Wands plugin = Wands.get();
-    private static final SpongeExecutorService executor = Sponge.getScheduler().createSyncExecutor(plugin);
+    private static final SpongeExecutorService executor = Sponge.getScheduler().createAsyncExecutor(plugin);
     private static final ParticleEffect effectRedStone = ParticleEffect.builder().type(ParticleTypes.REDSTONE).build();
     private static final ParticleEffect effectExplode = ParticleEffect.builder().type(ParticleTypes.EXPLOSION_LARGE).count(2).build();
     private final Vector3i origin;
@@ -57,27 +61,38 @@ public class Infusion implements Runnable {
     private Entity entity;
     private WandType wandType;
     private Player player;
+    private int ticks;
 
     public Infusion(Vector3i origin, World world) {
         this.origin = Conditions.nonNull(origin, "origin");
         this.world = Conditions.nonNull(world, "world");
-        lifting.set(origin.toDouble().add(0.5, 0, 0.5));
+        lifting.set(origin.toDouble().add(0.5, 1, 0.5));
+    }
+
+    /** Make sure the alter is really there */
+    public boolean isAlter() {
+        for (Vector3d vector : redStoneTorches()) {
+            if (!world.getLocation(vector).getBlock().getType().equals(BlockTypes.REDSTONE_TORCH)) {
+                return false;
+            }
+        }
+        return world.getLocation(origin).getBlock().getType().equals(BlockTypes.REDSTONE_BLOCK);
     }
 
     /** The locations on where the red stone torches should be */
     private List<Vector3d> redStoneTorches() {
         List<Vector3d> points = Lists.newArrayList();
-        Vector3d origin = this.origin.toDouble().add(0.5, 0.5, 0.5);
-        points.add(origin.add(2, 2, 2));
-        points.add(origin.add(2, 2, -2));
-        points.add(origin.add(-2, 2, -2));
-        points.add(origin.add(-2, 2, 2));
+        Vector3d origin = this.origin.toDouble().add(0.5, 3.5, 0.5);
+        points.add(origin.add(2, 0, 2));
+        points.add(origin.add(2, 0, -2));
+        points.add(origin.add(-2, 0, -2));
+        points.add(origin.add(-2, 0, 2));
         return points;
     }
 
     /** Get all the points where to spawn the particles */
-    private List<Vector3d> infusionParticles(Vector3d origin) {
-        List<Vector3d> points = Lists.newArrayList();
+    private Set<Vector3d> infusionParticles(Vector3d origin) {
+        Set<Vector3d> points = Sets.newHashSet();
         List<Vector3d> torches = redStoneTorches();
         final int depth = 3;
         points.addAll(Common.line(origin, torches.get(0), depth));
@@ -110,11 +125,18 @@ public class Infusion implements Runnable {
     @Override
     public void run() {
         Vector3d lifting = this.lifting.getAndSet(this.lifting.get().add(0, 0.0125, 0));
-        infusionParticles(lifting).forEach(vector -> world.spawnParticles(effectRedStone, vector));
-        player.playSound(SoundTypes.FUSE, lifting, 0.2, 0.02, 0.1);
-        entity.setVelocity(new Vector3d(0, 0.0876, 0));
+        entity.setVelocity(new Vector3d(0, 0.078, 0));
+        entity.setLocation(new Location<>(world, lifting));
         Task task = this.task.get();
         boolean stop = false;
+
+        if (ticks++ % 2 == 0) { // show particles every 2 ticks
+            infusionParticles(lifting).forEach(vector -> world.spawnParticles(effectRedStone, vector));
+        }
+
+        if (ticks % 3 == 0) { // Sound every 3 ticks
+            player.playSound(SoundTypes.FUSE, lifting, 0.2, 0.02, 0.1);
+        }
 
         // The entity is gone !?!?!
         if ((!entity.isLoaded() || entity.isRemoved()) && task != null) {
@@ -123,7 +145,7 @@ public class Infusion implements Runnable {
         }
 
         // After the infusion process
-        if (lifting.getY() > origin.getY() + 3 && task != null) {
+        if (lifting.getY() > origin.getY() + 3.5 && task != null) {
             stop = true;
 
             // Sounds
@@ -134,7 +156,6 @@ public class Infusion implements Runnable {
             ItemStack stack = ItemStack.of(wandType.itemType(), 1);
             stack.offer(Keys.DISPLAY_NAME, wandType.wand().name(player));
             entity.offer(Keys.REPRESENTED_ITEM, stack.createSnapshot());
-            //player.getInventory().offer(stack);
         }
 
         // Should the effect stop
