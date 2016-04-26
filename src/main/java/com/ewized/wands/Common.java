@@ -35,9 +35,9 @@ public final class Common {
     /** Create a list of vectors that will create a line between the two vector points */
     public static List<Vector3d> line(Vector3d alpha, Vector3d beta, int depth) {
         Vector3d mid = new Vector3d(
-            (alpha.getX() + beta.getX()) / 2,
-            (alpha.getY() + beta.getY()) / 2,
-            (alpha.getZ() + beta.getZ()) / 2
+            (alpha.getX() + beta.getX()) / 2.0,
+            (alpha.getY() + beta.getY()) / 2.0,
+            (alpha.getZ() + beta.getZ()) / 2.0
         );
         List<Vector3d> collect = Lists.newArrayList(mid, alpha, beta);
 

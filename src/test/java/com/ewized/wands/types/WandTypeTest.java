@@ -4,11 +4,13 @@ import com.ewized.wands.types.elements.IceWand;
 import org.junit.Assert;
 import org.junit.Test;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tristate;
 
 import java.util.List;
@@ -68,9 +70,21 @@ public class WandTypeTest {
         }
     }
 
+    private class FakeWand implements Wand {
+        @Override
+        public void onAction(Player player, WandType wand) {
+
+        }
+
+        @Override
+        public Text name(CommandSource src) {
+            return null;
+        }
+    }
+
     @Test
     public void permissionTest() {
         User user = new User();
-        Assert.assertTrue(new WandType("ice", "name", ItemTypes.NONE, new IceWand()).hasPermission(user));
+        Assert.assertTrue(new WandType("ice", "name", ItemTypes.NONE, new FakeWand()).hasPermission(user));
     }
 }
