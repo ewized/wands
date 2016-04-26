@@ -16,6 +16,9 @@ public enum Messages implements LocaleKeys<CommandSource, Text> {
     WAND_ICE_NAME,
     WAND_WATER_NAME,
     WAND_WIND_NAME,
+
+    // Alter
+    ALTER_RUNNING,
     ;
 
     @Override
