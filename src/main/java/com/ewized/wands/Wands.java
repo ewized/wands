@@ -23,6 +23,8 @@ package com.ewized.wands;
 
 import com.ewized.wands.types.WandType;
 import com.ewized.wands.types.WandTypes;
+import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.Lists;
 import net.year4000.utilities.sponge.AbstractSpongePlugin;
 import net.year4000.utilities.sponge.protocol.Packet;
 import net.year4000.utilities.sponge.protocol.PacketType;
@@ -35,7 +37,6 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.effect.sound.SoundTypes;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -51,7 +52,10 @@ import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Plugin(
     id = "com.ewized.wands",
@@ -120,14 +124,37 @@ public class Wands extends AbstractSpongePlugin {
                             .filter(e -> e.getLocation().getBlockPosition().sub(0, 1, 0).equals(hit.getBlockPosition()))
                             .findAny().ifPresent(item -> {
                             findByRawName(item.toString()).ifPresent(wandType -> {
-                                log(wandType);
-                                item.remove();
-                                ItemStack stack = ItemStack.of(wandType.itemType(), 1);
-                                stack.offer(Keys.DISPLAY_NAME, wandType.wand().name(player));
-                                stack.offer(Keys.HIDE_ENCHANTMENTS, true);
-                                player.getInventory().offer(stack);
-                                player.playSound(SoundTypes.EXPLODE, item.getLocation().getPosition(), 1);
-                                item.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.EXPLOSION_LARGE).build(), item.getLocation().getPosition());
+
+
+                                Vector3d originA = item.getLocation().getBlockPosition().toDouble().add(0.5, 0.5, 0.5);
+                                AtomicReference<Vector3d> originF = new AtomicReference<>(originA.clone());
+                                AtomicReference<Task> task = new AtomicReference<>();
+                                Task id = Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
+                                    Vector3d origin = originF.getAndSet(originF.get().add(0, 0.0125, 0));
+                                    List<Vector3d> points = Lists.newArrayList();
+                                    points.addAll(Common.line(origin, originA.clone().add(2, 2, 2), 3));
+                                    points.addAll(Common.line(origin, originA.clone().add(2, 2, -2), 3));
+                                    points.addAll(Common.line(origin, originA.clone().add(-2, 2, -2), 3));
+                                    points.addAll(Common.line(origin, originA.clone().add(-2, 2, 2), 3));
+
+                                    for (Vector3d point : points) {
+                                        item.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.REDSTONE).build(), point);
+                                    }
+
+                                    item.setVelocity(new Vector3d(0, 0.085, 0));
+
+                                    if (originF.get().getY() > originA.getY() + 3) {
+                                        task.get().cancel();
+                                        item.remove();
+                                        ItemStack stack = ItemStack.of(wandType.itemType(), 1);
+                                        stack.offer(Keys.DISPLAY_NAME, wandType.wand().name(player));
+                                        stack.offer(Keys.HIDE_ENCHANTMENTS, true);
+                                        player.getInventory().offer(stack);
+                                        player.playSound(SoundTypes.EXPLODE, origin, 1);
+                                        item.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.EXPLOSION_LARGE).build(), origin);
+                                    }
+                                }, 0, 125, TimeUnit.MILLISECONDS).getTask();
+                                task.set(id);
                             });
                         });
                         return;
