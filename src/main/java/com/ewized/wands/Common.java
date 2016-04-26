@@ -22,10 +22,10 @@
 package com.ewized.wands;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.year4000.utilities.utils.UtilityConstructError;
 
-import java.util.List;
+import java.util.Set;
 
 public final class Common {
     private Common() {
@@ -33,18 +33,18 @@ public final class Common {
     }
 
     /** Create a list of vectors that will create a line between the two vector points */
-    public static List<Vector3d> line(Vector3d alpha, Vector3d beta, int depth) {
+    public static Set<Vector3d> line(Vector3d alpha, Vector3d beta, int depth) {
         Vector3d mid = new Vector3d(
             (alpha.getX() + beta.getX()) / 2.0,
             (alpha.getY() + beta.getY()) / 2.0,
             (alpha.getZ() + beta.getZ()) / 2.0
         );
-        List<Vector3d> collect = Lists.newArrayList(mid, alpha, beta);
+        Set<Vector3d> collect = Sets.newHashSet(mid, alpha, beta);
 
         // Run at the depth
         if (depth-- > 0) {
-            List<Vector3d> left = line(alpha, mid, depth);
-            List<Vector3d> right = line(mid, beta, depth);
+            Set<Vector3d> left = line(alpha, mid, depth);
+            Set<Vector3d> right = line(mid, beta, depth);
 
             collect.addAll(left);
             collect.addAll(right);
