@@ -43,6 +43,8 @@ import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
@@ -119,7 +121,7 @@ public class Wands extends AbstractSpongePlugin {
                                 Infusion infusion = new Infusion(item.getLocation().getBlockPosition(), item.getWorld());
 
                                 if (infusion.isRunningAtLocation()) {
-                                    player.sendMessage(Messages.ALTER_RUNNING.get(player));
+                                    player.sendMessage(Text.of(TextColors.GOLD, Messages.ALTER_RUNNING.get(player)));
                                 } else {
                                     infusion.infuse(player, wandType, item);
                                 }
