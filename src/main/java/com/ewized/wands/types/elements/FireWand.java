@@ -23,12 +23,10 @@ package com.ewized.wands.types.elements;
 
 import com.ewized.wands.Common;
 import com.ewized.wands.Messages;
-import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
 import com.flowpowered.math.vector.Vector3d;
 import net.year4000.utilities.Conditions;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
@@ -39,7 +37,6 @@ import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -61,7 +58,7 @@ public class FireWand implements Wand {
     }
 
     public class Blast implements Runnable {
-        private final AtomicInteger deg = new AtomicInteger(360 * 2);
+        private final AtomicInteger deg = new AtomicInteger(0);
         private final AtomicReference<Task> task = new AtomicReference<>();
         private final World world;
         private final Vector3d origin;
@@ -76,7 +73,7 @@ public class FireWand implements Wand {
         }
 
         public void start() {
-            task.set(executor.scheduleWithFixedDelay(this, 0, 2, TimeUnit.MILLISECONDS).getTask());
+            task.set(executor.scheduleWithFixedDelay(this, 0, 125, TimeUnit.MILLISECONDS).getTask());
         }
 
         private void particles(double Θ, double x) {
@@ -88,8 +85,7 @@ public class FireWand implements Wand {
             double zz = Math.sin(Θ) + x * Math.cos(Θ);
 
             Vector3d point = origin.add(xx, y, zz);
-            world.spawnParticles(effect, point);
-            Common.line(last.get(), point, 3).forEach(vector -> world.spawnParticles(effect, vector));
+            Common.line(last.get(), point, 2).forEach(vector -> world.spawnParticles(effect, vector));
             last.set(point);
         }
 
