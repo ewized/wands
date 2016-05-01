@@ -53,7 +53,7 @@ import java.util.Optional;
 @Plugin(
     id = "com.ewized.wands",
     name = "Wands",
-    description = "Various wands that are fun to mess around with",
+    description = "Create magical wands to cast magical spells",
     authors = {"ewized"},
     dependencies = {@Dependency(id = "net.year4000.utilities")}
 )
