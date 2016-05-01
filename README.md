@@ -2,6 +2,29 @@
 
 This plugin will create various wands that are fun to mess around with.
 
+## Development
+
+Wands uses gradle to add a task that will let you run `Wands` right from your cloned repo.
+To get this setup all you need to do is have forge installed on the client.
+Then run `./gradlew :startForgeClient` this will compile `Wands` and start the client.
+The client game dir will be in `/run/forge-client/`.
+
+## Building
+
+To build this plugin all you need to run is `./gradlew build` this will compile both `Wands` and `Utilities`.
+Once you have both of the _jars_ you can place them in your mods folder.
+
+ - **Wands** `/build/libs/wands-x.x.x-xxxxxxxx.jar`
+ - **Utilities** `/utilities/build/libs/utilities-x.x.x-xxxxxxxx.jar`
+
+## Installing for Production
+
+To install this plugin, you must generate two jars from this repo.
+The first jar is `wands-x.x.x-xxxxxxxx.jar` and the other is `utilities-x.x.x-xxxxxxxx.jar`.
+**Wands** is the plugin it's self and **Utilities** is the lib plugin that contains common code.
+Wands requires to use the version that is a git module in this repo. The reason is that `Utilities`
+is constantly upgrading its codebase.
+
 ## License
 
 The code in this project is under the following license.

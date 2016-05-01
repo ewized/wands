@@ -12,6 +12,7 @@ defaultTasks 'assemble'
 group 'com.ewized'
 version '1.0.0-SNAPSHOT'
 
+jar.baseName = rootProject.name.toLowerCase()
 jar.manifest {
     attributes 'Implementation-Title': rootProject.name
     attributes 'Implementation-Version': version
