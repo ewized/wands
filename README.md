@@ -15,12 +15,12 @@ To build this plugin all you need to run is `./gradlew build` this will compile 
 Once you have both of the _jars_ you can place them in your mods folder.
 
  - **Wands** `/build/libs/wands-x.x.x-xxxxxxxx.jar`
- - **Utilities** `/utilities/build/libs/utilities-x.x.x-xxxxxxxx.jar`
+ - **Utilities** `/utilities/sponge/build/libs/utilities-x.x.x-xxxxxxxx-all.jar`
 
 ## Installing for Production
 
 To install this plugin, you must generate two jars from this repo.
-The first jar is `wands-x.x.x-xxxxxxxx.jar` and the other is `utilities-x.x.x-xxxxxxxx.jar`.
+The first jar is `wands-x.x.x-xxxxxxxx.jar` and the other is `utilities-x.x.x-xxxxxxxx-all.jar`.
 **Wands** is the plugin it's self and **Utilities** is the lib plugin that contains common code.
 Wands requires to use the version that is a git module in this repo. The reason is that `Utilities`
 is constantly upgrading its codebase.
