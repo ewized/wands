@@ -39,8 +39,6 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class IceWand implements Wand {
 
@@ -58,10 +56,10 @@ public class IceWand implements Wand {
 
     /** The vortex task */
     public class Vortex implements Runnable {
-        private final AtomicInteger deg = new AtomicInteger(360 * 2);
-        private final AtomicReference<Task> task = new AtomicReference<>();
         private final World world;
         private final Vector3d origin;
+        private int deg = 360 * 2;
+        private Task task;
 
         public Vortex(World world, Vector3d origin) {
             this.world = Conditions.nonNull(world, "world");
@@ -70,7 +68,7 @@ public class IceWand implements Wand {
 
         /** Start the vortex task */
         public void start() {
-            task.set(executor.scheduleWithFixedDelay(this, 0, 50, TimeUnit.MILLISECONDS).getTask());
+            task = executor.scheduleWithFixedDelay(this, 0, 50, TimeUnit.MILLISECONDS).getTask();
         }
 
         /** Show the particles for a cool effect */
@@ -111,12 +109,11 @@ public class IceWand implements Wand {
 
         @Override
         public void run() {
-            deg.getAndDecrement();
-            int number = deg.getAndDecrement();
+            int number = deg -= 2;
             if (number > 0) {
                 particles(number * TrigMath.DEG_TO_RAD);
-            } else if (task.get() != null) {
-                task.get().cancel();
+            } else if (task != null) {
+                task.cancel();
             }
         }
     }

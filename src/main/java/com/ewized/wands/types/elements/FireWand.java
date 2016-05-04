@@ -39,8 +39,6 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class FireWand implements Wand {
     private static final ParticleEffect effect = ParticleEffect.builder().type(ParticleTypes.FLAME).count(5).build();
@@ -59,22 +57,22 @@ public class FireWand implements Wand {
     }
 
     public class Blast implements Runnable {
-        private final AtomicInteger deg = new AtomicInteger(0);
-        private final AtomicReference<Task> task = new AtomicReference<>();
         private final World world;
         private final Vector3d origin;
         private final double theta;
-        private final AtomicReference<Vector3d> last = new AtomicReference<>();
+        private Vector3d last;
+        private int deg = 0;
+        private Task task;
 
         public Blast(World world, Vector3d origin, double theta) {
             this.world = Conditions.nonNull(world, "world");
             this.origin = Conditions.nonNull(origin, "origin");
-            this.last.set(origin);
+            this.last = origin;
             this.theta = theta;
         }
 
         public void start() {
-            task.set(executor.scheduleWithFixedDelay(this, 0, 125, TimeUnit.MILLISECONDS).getTask());
+            task = executor.scheduleWithFixedDelay(this, 0, 125, TimeUnit.MILLISECONDS).getTask();
         }
 
         private void particles(double Θ, double x) {
@@ -86,17 +84,17 @@ public class FireWand implements Wand {
             double zz = TrigMath.sin(Θ) + x * TrigMath.cos(Θ);
 
             Vector3d point = origin.add(xx, y, zz);
-            Common.line(last.get(), point, 2).forEach(vector -> world.spawnParticles(effect, vector));
-            last.set(point);
+            Common.line(last, point, 2).forEach(vector -> world.spawnParticles(effect, vector));
+            last = point;
         }
 
         @Override
         public void run() {
-            int number = deg.getAndIncrement();
+            int number = deg++;
             if (number < 360) {
                 particles(theta, number);
-            } else if (task.get() != null) {
-                task.get().cancel();
+            } else if (task != null) {
+                task.cancel();
             }
         }
     }
