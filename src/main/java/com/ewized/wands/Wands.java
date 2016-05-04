@@ -51,7 +51,7 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 @Plugin(
-    id = "wands",
+    id = "com.ewized.wands",
     name = "Wands",
     description = "Create magical wands to cast magical spells",
     authors = {"ewized"},

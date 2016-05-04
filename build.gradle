@@ -9,13 +9,16 @@ apply from: project('utilities').file('gradle/sponge.gradle')
 
 defaultTasks 'assemble'
 
+def rawVersion = '1.0.0'
+def gitVersion = rawVersion + '-' + git()
+
 group 'com.ewized'
-version '1.0.0-SNAPSHOT'
+version gitVersion
 
 jar.baseName = rootProject.name.toLowerCase()
 jar.manifest {
     attributes 'Implementation-Title': rootProject.name
-    attributes 'Implementation-Version': version
+    attributes 'Implementation-Version': rawVersion
     attributes 'Specification-Version': git()
 }
 
