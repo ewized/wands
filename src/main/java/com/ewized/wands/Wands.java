@@ -51,11 +51,11 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 @Plugin(
-    id = "com.ewized.wands",
+    id = "wands",
     name = "Wands",
     description = "Create magical wands to cast magical spells",
     authors = {"ewized"},
-    dependencies = {@Dependency(id = "net.year4000.utilities")}
+    dependencies = {@Dependency(id = "utilities")}
 )
 public class Wands extends AbstractSpongePlugin {
     private Packets packets;
