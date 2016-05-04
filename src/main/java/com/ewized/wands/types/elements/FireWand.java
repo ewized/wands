@@ -25,6 +25,7 @@ import com.ewized.wands.Common;
 import com.ewized.wands.Messages;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
+import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
 import net.year4000.utilities.Conditions;
 import org.spongepowered.api.command.CommandSource;
@@ -53,7 +54,7 @@ public class FireWand implements Wand {
     public void onAction(Player player, WandType wand) {
         player.sendMessage(ChatTypes.ACTION_BAR, name(player));
         Vector3d vector = player.getLocation().getPosition();
-        double theta = player.getHeadRotation().getY() * Math.PI / 180;
+        double theta = player.getHeadRotation().getY() * TrigMath.DEG_TO_RAD;
         new Blast(player.getWorld(), vector, theta).start();
     }
 
@@ -77,12 +78,12 @@ public class FireWand implements Wand {
         }
 
         private void particles(double Θ, double x) {
-            double θ = x * Math.PI / 180;
-            double y = 2 * Math.sin(24 * θ);
+            double θ = x * TrigMath.DEG_TO_RAD;
+            double y = 2 * TrigMath.sin(24 * θ);
 
             // Head rotation fix
-            double xx = Math.cos(Θ) - x * Math.sin(Θ);
-            double zz = Math.sin(Θ) + x * Math.cos(Θ);
+            double xx = TrigMath.cos(Θ) - x * TrigMath.sin(Θ);
+            double zz = TrigMath.sin(Θ) + x * TrigMath.cos(Θ);
 
             Vector3d point = origin.add(xx, y, zz);
             Common.line(last.get(), point, 2).forEach(vector -> world.spawnParticles(effect, vector));

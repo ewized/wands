@@ -25,6 +25,7 @@ import com.ewized.wands.Messages;
 import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
+import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -52,8 +53,8 @@ public class WindWand implements Wand {
         Sponge.getScheduler().createSyncExecutor(Wands.get()).execute(() -> {
             Entity entity = world.createEntity(EntityTypes.ARROW, player.getLocation().getBlockPosition()).get();
             double theta = player.getHeadRotation().add(0, 2, 0).getY();
-            double x = 2 * Math.cos(theta);
-            double z = 3 * Math.sin(theta);
+            double x = 2 * TrigMath.cos(theta);
+            double z = 3 * TrigMath.sin(theta);
             double y = x * z;
             entity.setVelocity(new Vector3d(x, y ,z));
             world.spawnEntity(entity, Cause.source(Wands.get()).build());

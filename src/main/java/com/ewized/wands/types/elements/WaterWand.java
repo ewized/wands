@@ -25,6 +25,7 @@ import com.ewized.wands.Messages;
 import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
+import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -52,14 +53,14 @@ public class WaterWand implements Wand {
         player.sendMessage(ChatTypes.ACTION_BAR, name(player));
         Vector3d vector = player.getLocation().getPosition().add(0, 1.65, 0);
         Vector3d pos = player.getHeadRotation();//.normalize();
-        double t = pos.getY() * Math.PI / 180;
+        double t = pos.getY() * TrigMath.DEG_TO_RAD;
 
         final AtomicInteger deg = new AtomicInteger(5);
         final AtomicReference<UUID> id = new AtomicReference<>();
         UUID uuid = Sponge.getScheduler().createAsyncExecutor(Wands.get()).scheduleAtFixedRate(() -> {
             int number = deg.getAndDecrement();
             if (number > -5) {
-                particles(player.getLocation().getExtent(), vector, t, Math.tan(number));
+                particles(player.getLocation().getExtent(), vector, t, TrigMath.tan(number));
             } else if (id.get() != null) {
                 Sponge.getScheduler().getTaskById(id.get());
             }
@@ -71,14 +72,14 @@ public class WaterWand implements Wand {
         double o = 0.1;
         double r = 0.1;
         for (int i = 0; i < 360 * 6; i++) {
-            double theta = i * Math.PI / 180;
+            double theta = i * TrigMath.DEG_TO_RAD;
             double x = (o += 0.00125);
-            double y = r * Math.cos(shift * theta);
-            double z = r * Math.sin(shift * theta);
+            double y = r * TrigMath.cos(shift * theta);
+            double z = r * TrigMath.sin(shift * theta);
             r += 0.00125;
 
-            double xx = z * Math.cos(t) - x * Math.sin(t);
-            double zz = z * Math.sin(t) + x * Math.cos(t);
+            double xx = z * TrigMath.cos(t) - x * TrigMath.sin(t);
+            double zz = z * TrigMath.sin(t) + x * TrigMath.cos(t);
             ParticleEffect effect = ParticleEffect.builder()
                     .type(ParticleTypes.DRIP_WATER)
                     .build();

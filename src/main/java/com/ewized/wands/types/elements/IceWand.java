@@ -22,18 +22,16 @@
 package com.ewized.wands.types.elements;
 
 import com.ewized.wands.Messages;
-import com.ewized.wands.Wands;
 import com.ewized.wands.types.Wand;
 import com.ewized.wands.types.WandType;
+import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
 import net.year4000.utilities.Conditions;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleType;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
@@ -81,16 +79,16 @@ public class IceWand implements Wand {
             double r = 0.01;
             double rr = 0.001;
             for (int i = 0; i < 360 * 1.35; i++) {
-                double θ = i * Math.PI / 180;
-                double y = r * Math.cos(8 * θ) * 0.125;
-                double z = r * Math.sin(6 * θ) * 0.125;
-                double yy = -rr * Math.cos(θ);
-                double zz = -rr * Math.sin(θ);
+                double θ = i * TrigMath.DEG_TO_RAD;
+                double y = r * TrigMath.cos(8 * θ) * 0.125;
+                double z = r * TrigMath.sin(6 * θ) * 0.125;
+                double yy = -rr * TrigMath.cos(θ);
+                double zz = -rr * TrigMath.sin(θ);
                 rr += 0.0125;
                 r += 0.0654;
 
-                double cosBeta = Math.cos(beta);
-                double sinBeta = Math.sin(beta);
+                double cosBeta = TrigMath.cos(beta);
+                double sinBeta = TrigMath.sin(beta);
                 double xxx = z * cosBeta - y * sinBeta;
                 double zzz = z * sinBeta + y * cosBeta;
                 double xxxx = zz * cosBeta - yy * sinBeta;
@@ -116,7 +114,7 @@ public class IceWand implements Wand {
             deg.getAndDecrement();
             int number = deg.getAndDecrement();
             if (number > 0) {
-                particles(number * Math.PI / 180);
+                particles(number * TrigMath.DEG_TO_RAD);
             } else if (task.get() != null) {
                 task.get().cancel();
             }
