@@ -41,6 +41,8 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.event.world.UnloadWorldEvent;
+import org.spongepowered.api.event.world.chunk.UnloadChunkEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Dependency;
@@ -80,6 +82,16 @@ public class Wands extends AbstractSpongePlugin {
     @Listener
     public void disable(GameStoppingEvent event) {
         Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+    }
+
+    @Listener
+    public void cleanUp(UnloadWorldEvent event) {
+        Infusion.cleanUp(event.getTargetWorld());
+    }
+
+    @Listener
+    public void cleanUp(UnloadChunkEvent event) {
+        Infusion.cleanUp(event.getTargetChunk());
     }
 
     /** Find the wand type by sponge item stack */
