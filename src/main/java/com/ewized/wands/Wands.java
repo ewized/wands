@@ -147,11 +147,20 @@ public class Wands extends AbstractSpongePlugin {
         });
     }
 
+    /** Is the plugin in debug mode, when enabled hidden features and debug messages */
+    public boolean isDebug() {
+        return System.getProperty("wands.debug") != null;
+    }
+
+    /** Log messages to the screen */
     public static void log(Object object, Object... args) {
         log(get(), object, args);
     }
 
+    /** Debug messages to the screen */
     public static void debug(Object object, Object... args) {
-        debug(get(), object, args);
+        if (get().isDebug()) {
+            debug(get(), object, args);
+        }
     }
 }
